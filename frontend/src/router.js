@@ -1,28 +1,50 @@
+import { Dashboard } from "./components/dashboard.js";
+import { Login } from "./components/login.js";
+import { Signup } from "./components/signup.js";
+
 export class Router{
     constructor(){
         this.initEvents();
 
         this.titleElement = document.getElementById('page-title');
         this.stylesElement = document.getElementById('style');
-        this.contentElement = document.getElementById('contant');
+        this.contentElement = document.getElementById('content');
 
-        this.routes= [
+        this.routes = [
             {
                 route: '/',
                 title: 'Дашборд',
-                template: 'html',
-                styles: 'css',
+                template: './templates/index.html',
+                /*styles: 'css',*/
                 load: () => {
-
+                    new Dashboard();
                 }
             },
             {
                 route: '/404',
                 title: 'Страница не найдена',
-                template: 'html',
-                styles: 'css',
+                template: './templates/404.html',
+                /*styles: 'css',*/
                 load: () => {
 
+                }
+            },
+            {
+                route: '/login',
+                title: 'Авторизация',
+                template: './templates/login.html',
+                /*styles: 'css',*/
+                load: () => {
+                    new Login();
+                }
+            },
+            {
+                route: '/signup',
+                title: 'Регистрация',
+                template: './templates/signup.html',
+                /*styles: 'css',*/
+                load: () => {
+                    new Signup();
                 }
             }
         ]
@@ -35,8 +57,8 @@ export class Router{
 
     async openRoute(){
         const url = window.location.pathname;
-        
-        const newRoute = find.this.routes(item => item.route === url);
+
+        const newRoute = this.routes.find(item => item.route === url);
 
         if(!newRoute){
             window.location = '/404';
@@ -52,12 +74,11 @@ export class Router{
         }
 
         if(this.contentElement){
-            this.contentElement = await fetch(newRoute.template).then(responce => responce.text());
+            this.contentElement.innerHTML = await fetch(newRoute.template).then(responce => responce.text());
         }
 
-        
-       
-        
-        newRoute.load();
+        if(newRoute.load && typeof newRoute.load === 'function'){
+            newRoute.load();
+        }
     }
 }

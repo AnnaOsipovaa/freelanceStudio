@@ -17,29 +17,31 @@ module.exports = {
         port: 9000,
         historyApiFallback: true,
     },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: './index.html'
-        }),
-        new CopyPlugin({
-            patterns: [
-                { from: "./src/templates", to: "templates" },
-            ],
-        }),
-    ],
     module: {
         rules: [
             {
                 test: /\.s[ac]ss$/i,
                 use: [
-                    // Creates `style` nodes from JS strings
                     "style-loader",
-                    // Translates CSS into CommonJS
                     "css-loader",
-                    // Compiles Sass to CSS
                     "sass-loader",
                 ],
             },
         ],
     },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './index.html'
+        }),
+        new CopyPlugin({ 
+            patterns: [
+                { from: "./src/templates", to: "templates" },
+                { from: "./node_modules/admin-lte/plugins/fontawesome-free/webfonts", to: "webfonts" },
+                { from: "./node_modules/admin-lte/plugins/fontawesome-free/css/all.min.css", to: "css" },
+                { from: "./node_modules/admin-lte/dist/css/adminlte.min.css", to: "css" },
+                { from: "./node_modules/admin-lte/plugins/jquery/jquery.min.js", to: "js" },
+                { from: "./node_modules/admin-lte/dist/js/adminlte.min.js", to: "js" }
+            ],
+        }),
+    ],
 };

@@ -9,6 +9,7 @@ export class Router {
         this.titleElement = document.getElementById('page-title');
         this.stylesElement = document.getElementById('style');
         this.contentElement = document.getElementById('content');
+        this.adminLteStyleElement = document.getElementById('admin-lte_style');
 
         this.routes = [
             {
@@ -16,7 +17,6 @@ export class Router {
                 title: 'Дашборд',
                 template: './templates/index.html',
                 useLayout: './templates/layout.html',
-                /*styles: 'css',*/
                 load: () => {
                     new Dashboard();
                 }
@@ -26,7 +26,6 @@ export class Router {
                 title: 'Страница не найдена',
                 template: './templates/404.html',
                 useLayout: false,
-                /*styles: 'css',*/
                 load: () => {
 
                 }
@@ -36,20 +35,29 @@ export class Router {
                 title: 'Авторизация',
                 template: './templates/login.html',
                 useLayout: false,
-                /*styles: 'css',*/
                 load: () => {
+                    document.body.classList.add('login-page');
+                    document.body.style.height = '100vh';
                     new Login();
-                }
+                },
+                styles: [
+                    'icheck-bootstrap.min.css'
+                ]
             },
             {
                 route: '/signup',
                 title: 'Регистрация',
                 template: './templates/signup.html',
                 useLayout: false,
-                /*styles: 'css',*/
                 load: () => {
+                    document.body.classList.add('register-page');
+                    document.body.style.height = '100vh';
+                    
                     new Signup();
-                }
+                },
+                styles: [
+                    'icheck-bootstrap.min.css'
+                ]
             }
         ]
     }
@@ -69,11 +77,22 @@ export class Router {
             return;
         }
 
+        if (newRoute.styles && newRoute.styles.length > 0) {
+
+            newRoute.styles.forEach(item => {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '/css/' + item;
+                document.head.insertBefore(link, this.adminLteStyleElement);
+            });
+        }
+
         if (newRoute.title) {
             this.titleElement.innerText = newRoute.title;
         }
 
         if (newRoute.template) {
+            document.body.classNmse = '';
             let contentBlock = this.contentElement;
 
             if (newRoute.useLayout) {
@@ -81,7 +100,7 @@ export class Router {
                 contentBlock = document.getElementById('content-layout');
                 document.body.classList.add('sidebar-mini');
                 document.body.classList.add('sidebar-fixed');
-            }else{
+            } else {
                 document.body.classList.remove('sidebar-mini');
                 document.body.classList.remove('sidebar-fixed');
             }

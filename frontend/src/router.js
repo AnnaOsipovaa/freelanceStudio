@@ -40,6 +40,10 @@ export class Router {
                     document.body.style.height = '100vh';
                     new Login();
                 },
+                unload: () => {
+                    document.body.classList.remove('login-page');
+                    document.body.style.height = 'auto';
+                },
                 styles: [
                     'icheck-bootstrap.min.css'
                 ]
@@ -52,8 +56,12 @@ export class Router {
                 load: () => {
                     document.body.classList.add('register-page');
                     document.body.style.height = '100vh';
-                    
+
                     new Signup();
+                },
+                unload: () => {
+                    document.body.classList.remove('register-page');
+                    document.body.style.height = 'auto';
                 },
                 styles: [
                     'icheck-bootstrap.min.css'
@@ -65,15 +73,57 @@ export class Router {
     initEvents() {
         window.addEventListener('DOMContentLoaded', this.openRoute.bind(this));
         window.addEventListener('popstate', this.openRoute.bind(this));
+        document.addEventListener('click', this.openNewRoute.bind(this));
     }
 
-    async openRoute() {
-        const url = window.location.pathname;
+    async openNewRoute(e) {
+        let element = null;
+        if (e.target.nodeName === 'A') {
+            element = e.target;
+        } else {
+            if (e.target.parentNode.nodeName === 'A') {
+                element = e.target.parentNode;
+            }
+        }
 
+        if (element) {
+            e.preventDefault();
+
+            const url = element.href.replace(window.location.origin, '');
+            if (!url || url === '/#' || url.startsWith('javascript:void(0)')) {
+                return;
+            }
+
+            const currentRoute = window.location.pathname;
+
+            history.pushState({}, '', url);
+            await this.openRoute(null, currentRoute);
+        }
+    }
+
+
+    async openRoute(e, oldRoute = null) {
+        if (oldRoute) {
+            const currentRoute = this.routes.find(item => item.route === oldRoute);
+
+            if (currentRoute.styles && currentRoute.styles.length > 0) {
+
+                currentRoute.styles.forEach(item => {
+                    document.querySelector(`link[href='/css/${item}']`).remove();
+                });
+            }
+
+            if (currentRoute.unload && typeof currentRoute.unload === 'function') {
+                currentRoute.unload();
+            }
+        }
+
+        const url = window.location.pathname;
         const newRoute = this.routes.find(item => item.route === url);
 
         if (!newRoute) {
-            window.location = '/404';
+            history.pushState({}, '', '/404');
+            await this.openRoute();
             return;
         }
 
@@ -92,7 +142,6 @@ export class Router {
         }
 
         if (newRoute.template) {
-            document.body.classNmse = '';
             let contentBlock = this.contentElement;
 
             if (newRoute.useLayout) {

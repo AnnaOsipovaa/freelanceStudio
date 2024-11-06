@@ -115,7 +115,7 @@ export class Router {
 
             if (currentRoute.unload && typeof currentRoute.unload === 'function') {
                 currentRoute.unload();
-            }
+            } 
         }
 
         const url = window.location.pathname;

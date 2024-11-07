@@ -1,5 +1,6 @@
 export class Login {
-    constructor() {
+    constructor(openNewRoute) {
+        this.openNewRoute = openNewRoute;
         this.emailElement = document.getElementById('email');
         this.passwordElement = document.getElementById('password');
         this.remember = document.getElementById('remember');
@@ -38,7 +39,7 @@ export class Login {
                 name: result.name
             }));
 
-            
+            this.openNewRoute('/');
         } else {
 
         }

@@ -1,6 +1,13 @@
+import { AuthUtils } from "../utils/auth-utils.js";
+
 export class Login {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
+
+        if(AuthUtils.getAuthInfo(AuthUtils.accessTokenKey)){
+            return this.openNewRoute('/');
+        }
+
         this.emailElement = document.getElementById('email');
         this.passwordElement = document.getElementById('password');
         this.remember = document.getElementById('remember');
@@ -20,7 +27,7 @@ export class Login {
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    login: this.emailElement.value,
+                    email: this.emailElement.value,
                     password: this.passwordElement.value,
                     rememberMe: this.remember.checked
                 })
@@ -32,12 +39,10 @@ export class Login {
                 return;
             }
 
-            localStorage.setItem('accessToken', result.accessToken);
-            localStorage.setItem('refreshToken', result.refreshToken);
-            localStorage.setItem('userInfo', JSON.stringify({
+            AuthUtils.setAuthInfo(result.accessToken, result.refreshToken, {
                 id: result.id,
                 name: result.name
-            }));
+            });
 
             this.openNewRoute('/');
         } else {

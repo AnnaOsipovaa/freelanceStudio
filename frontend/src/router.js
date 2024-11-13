@@ -1,5 +1,6 @@
 import { Dashboard } from "./components/dashboard.js";
 import { Login } from "./components/login.js";
+import { Logout } from "./components/logout.js";
 import { Signup } from "./components/signup.js";
 
 export class Router {
@@ -38,7 +39,7 @@ export class Router {
                 load: () => {
                     document.body.classList.add('login-page');
                     document.body.style.height = '100vh';
-                    new Login(this.openNewRoute.bind(this, url));
+                    new Login(this.openNewRoute.bind(this));
                 },
                 unload: () => {
                     document.body.classList.remove('login-page');
@@ -57,7 +58,7 @@ export class Router {
                     document.body.classList.add('register-page');
                     document.body.style.height = '100vh';
 
-                    new Signup();
+                    new Signup(this.openNewRoute.bind(this));
                 },
                 unload: () => {
                     document.body.classList.remove('register-page');
@@ -66,6 +67,12 @@ export class Router {
                 styles: [
                     'icheck-bootstrap.min.css'
                 ]
+            },
+            {
+                route: '/logout',
+                load: () => {
+                    new Logout(this.openNewRoute.bind(this));
+                }
             }
         ]
     }

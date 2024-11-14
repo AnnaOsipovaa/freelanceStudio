@@ -47,8 +47,14 @@ export class HttpUtils {
             if (useAuth && response.status === 401) {
                 if (!token) {
                     result.redirect = '/login';
-                }else{
-                    
+                } else {
+                    const updateTokenResult = await AuthUtils.updateRefreshToken();
+
+                    if (updateTokenResult) {
+                        return this.request(url, useAuth, method, body);
+                    } else {
+                        result.redirect = '/login';
+                    }
                 }
             }
         }

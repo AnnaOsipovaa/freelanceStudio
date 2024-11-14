@@ -1,7 +1,8 @@
 import { Dashboard } from "./components/dashboard.js";
-import { Login } from "./components/login.js";
-import { Logout } from "./components/logout.js";
-import { Signup } from "./components/signup.js";
+import { FreelancesList } from "./components/freelances/freelances-list.js";
+import { Login } from "./components/auth/login.js";
+import { Logout } from "./components/auth/logout.js";
+import { Signup } from "./components/auth/signup.js";
 
 export class Router {
     constructor() {
@@ -16,7 +17,7 @@ export class Router {
             {
                 route: '/',
                 title: 'Дашборд',
-                template: './templates/index.html',
+                template: './templates/pages/dashboard.html',
                 useLayout: './templates/layout.html',
                 load: () => {
                     new Dashboard();
@@ -25,7 +26,7 @@ export class Router {
             {
                 route: '/404',
                 title: 'Страница не найдена',
-                template: './templates/404.html',
+                template: './templates/pages/404.html',
                 useLayout: false,
                 load: () => {
 
@@ -34,7 +35,7 @@ export class Router {
             {
                 route: '/login',
                 title: 'Авторизация',
-                template: './templates/login.html',
+                template: './templates/pages/auth/login.html',
                 useLayout: false,
                 load: () => {
                     document.body.classList.add('login-page');
@@ -52,7 +53,7 @@ export class Router {
             {
                 route: '/signup',
                 title: 'Регистрация',
-                template: './templates/signup.html',
+                template: './templates/pages/auth/signup.html',
                 useLayout: false,
                 load: () => {
                     document.body.classList.add('register-page');
@@ -72,6 +73,15 @@ export class Router {
                 route: '/logout',
                 load: () => {
                     new Logout(this.openNewRoute.bind(this));
+                }
+            },
+            {
+                route: '/freelances',
+                title: 'Фрилансеры',
+                template: './templates/pages/freelances/list.html',
+                useLayout: './templates/layout.html',
+                load: () => {
+                    new FreelancesList(this.openNewRoute.bind(this));
                 }
             }
         ]

@@ -1,8 +1,9 @@
 import { Dashboard } from "./components/dashboard.js";
-import { FreelancesList } from "./components/freelances/freelances-list.js";
+import { FreelancesList } from "./components/freelances/freelancers-list.js";
 import { Login } from "./components/auth/login.js";
 import { Logout } from "./components/auth/logout.js";
 import { Signup } from "./components/auth/signup.js";
+import { FileUtils } from "./utils/file-utils.js";
 
 export class Router {
     constructor() {
@@ -82,7 +83,15 @@ export class Router {
                 useLayout: './templates/layout.html',
                 load: () => {
                     new FreelancesList(this.openNewRoute.bind(this));
-                }
+                },
+                styles: [
+                    'dataTables.bootstrap4.min.css',
+                    'responsive.bootstrap4.min.css',
+                ],
+                scripts: [
+                    'jquery.dataTables.min.js',
+                    'dataTables.bootstrap4.min.js'
+                ]
             }
         ]
     }
@@ -126,9 +135,14 @@ export class Router {
             const currentRoute = this.routes.find(item => item.route === oldRoute);
 
             if (currentRoute.styles && currentRoute.styles.length > 0) {
-
                 currentRoute.styles.forEach(item => {
                     document.querySelector(`link[href='/css/${item}']`).remove();
+                });
+            }
+
+            if (currentRoute.scripts && currentRoute.scripts.length > 0) {
+                currentRoute.scripts.forEach(item => {
+                    document.querySelector(`script[src='/js/${item}']`).remove();
                 });
             }
 
@@ -147,13 +161,15 @@ export class Router {
         }
 
         if (newRoute.styles && newRoute.styles.length > 0) {
-
             newRoute.styles.forEach(item => {
-                const link = document.createElement('link');
-                link.rel = 'stylesheet';
-                link.href = '/css/' + item;
-                document.head.insertBefore(link, this.adminLteStyleElement);
+                FileUtils.loadPageStyle('/css/' + item, this.adminLteStyleElement);
             });
+        }
+
+        if (newRoute.scripts && newRoute.scripts.length > 0) {
+            for (const script of newRoute.scripts) {
+                await FileUtils.loadPageScript('/js/' + script);
+            }
         }
 
         if (newRoute.title) {

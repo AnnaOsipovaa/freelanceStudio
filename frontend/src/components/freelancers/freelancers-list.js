@@ -2,14 +2,14 @@
 import config from "../../config/config.js";
 import { HttpUtils } from "../../utils/http-utils.js";
 
-export class FreelancesList {
+export class FreelancersList {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
 
-        this.getFreelances();
+        this.getFreelancers();
     }
 
-    async getFreelances() {
+    async getFreelancers() {
         const result = await HttpUtils.request('/freelancers');
 
         if (result.redirect) {
@@ -59,6 +59,18 @@ export class FreelancesList {
                 <a href="/freelancers/delete?id=${element.id}"><i class="fas fa-trash"></i></a>
                 </div>`;
             recordsElements.appendChild(trElement);
+        });
+
+        new DataTable('#data-table', {
+            language: {
+                "lengthMenu": "Показывать _MENU_ записей на странице",
+                "search": "Фильтр:",
+                "info": "Страница _PAGE_ из _PAGES_ ",
+                "paginate": {
+                    "next": "Вперед",
+                    "previous": "Назад"
+                },
+            }
         });
     }
 }

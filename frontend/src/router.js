@@ -1,9 +1,10 @@
 import { Dashboard } from "./components/dashboard.js";
-import { FreelancesList } from "./components/freelances/freelancers-list.js";
+import { FreelancersList } from "./components/freelancers/freelancers-list.js";
 import { Login } from "./components/auth/login.js";
 import { Logout } from "./components/auth/logout.js";
 import { Signup } from "./components/auth/signup.js";
 import { FileUtils } from "./utils/file-utils.js";
+import { FreelancesView } from "./components/freelancers/freelancers-view.js";
 
 export class Router {
     constructor() {
@@ -18,8 +19,8 @@ export class Router {
             {
                 route: '/',
                 title: 'Дашборд',
-                template: './templates/pages/dashboard.html',
-                useLayout: './templates/layout.html',
+                template: '/templates/pages/dashboard.html',
+                useLayout: '/templates/layout.html',
                 load: () => {
                     new Dashboard();
                 }
@@ -27,7 +28,7 @@ export class Router {
             {
                 route: '/404',
                 title: 'Страница не найдена',
-                template: './templates/pages/404.html',
+                template: '/templates/pages/404.html',
                 useLayout: false,
                 load: () => {
 
@@ -36,7 +37,7 @@ export class Router {
             {
                 route: '/login',
                 title: 'Авторизация',
-                template: './templates/pages/auth/login.html',
+                template: '/templates/pages/auth/login.html',
                 useLayout: false,
                 load: () => {
                     document.body.classList.add('login-page');
@@ -54,7 +55,7 @@ export class Router {
             {
                 route: '/signup',
                 title: 'Регистрация',
-                template: './templates/pages/auth/signup.html',
+                template: '/templates/pages/auth/signup.html',
                 useLayout: false,
                 load: () => {
                     document.body.classList.add('register-page');
@@ -77,12 +78,12 @@ export class Router {
                 }
             },
             {
-                route: '/freelances',
+                route: '/freelancers',
                 title: 'Фрилансеры',
-                template: './templates/pages/freelances/list.html',
-                useLayout: './templates/layout.html',
+                template: '/templates/pages/freelancers/list.html',
+                useLayout: '/templates/layout.html',
                 load: () => {
-                    new FreelancesList(this.openNewRoute.bind(this));
+                    new FreelancersList(this.openNewRoute.bind(this));
                 },
                 styles: [
                     'dataTables.bootstrap4.min.css',
@@ -92,6 +93,15 @@ export class Router {
                     'jquery.dataTables.min.js',
                     'dataTables.bootstrap4.min.js'
                 ]
+            },
+            {
+                route: '/freelancers/view',
+                title: 'Фрилансер',
+                template: '/templates/pages/freelancers/view.html',
+                useLayout: '/templates/layout.html',
+                load: () => {
+                    new FreelancesView(this.openNewRoute.bind(this));
+                }
             }
         ]
     }
@@ -115,8 +125,9 @@ export class Router {
         if (element) {
             e.preventDefault();
 
+            const currentRoute = window.location.pathname;
             const url = element.href.replace(window.location.origin, '');
-            if (!url || url === '/#' || url.startsWith('javascript:void(0)')) {
+            if (!url || (currentRoute === url.replace('#', '')) || url.startsWith('javascript:void(0)')) {
                 return;
             }
 
@@ -182,6 +193,7 @@ export class Router {
             if (newRoute.useLayout) {
                 this.contentElement.innerHTML = await fetch(newRoute.useLayout).then(responce => responce.text());
                 contentBlock = document.getElementById('content-layout');
+
                 document.body.classList.add('sidebar-mini');
                 document.body.classList.add('sidebar-fixed');
             } else {

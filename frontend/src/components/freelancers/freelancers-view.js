@@ -1,4 +1,5 @@
 import config from "../../config/config.js";
+import { CommonUtils } from "../../utils/common-utils.js";
 import { HttpUtils } from "../../utils/http-utils.js";
 
 export class FreelancesView {
@@ -38,24 +39,7 @@ export class FreelancesView {
         }
 
         document.getElementById('name').innerText = freelancer.name + ' ' + freelancer.lastName;
-
-        let levelHtml = null;
-        switch (freelancer.level) {
-            case config.freelancerLevels.junior:
-                levelHtml = `<span class="badge badge-info">${freelancer.level}</span>`
-                break;
-            case config.freelancerLevels.middle:
-                levelHtml = `<span class="badge badge-warning">${freelancer.level}</span>`
-                break;
-            case config.freelancerLevels.senior:
-                levelHtml = `<span class="badge badge-success">${freelancer.level}</span>`
-                break;
-            default:
-                levelHtml = `<span class="badge badge-secondary">Unknown</span>`
-                break;
-        }
-        document.getElementById('level').innerHTML = levelHtml;
-
+        document.getElementById('level').innerHTML = CommonUtils.getLevelHtml(freelancer.level);
         document.getElementById('email').innerText = freelancer.email;
         document.getElementById('education').innerText = freelancer.education;
         document.getElementById('location').innerText = freelancer.location;

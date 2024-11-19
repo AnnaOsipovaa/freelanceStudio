@@ -1,5 +1,6 @@
 
 import config from "../../config/config.js";
+import { CommonUtils } from "../../utils/common-utils.js";
 import { HttpUtils } from "../../utils/http-utils.js";
 
 export class FreelancersList {
@@ -32,24 +33,7 @@ export class FreelancersList {
             trElement.insertCell().innerHTML = element.avatar ? `<img class="freelancer-avatar" src="${config.host + element.avatar}" alt="фото">` : '';
             trElement.insertCell().innerText = element.name + ' ' + element.lastName;
             trElement.insertCell().innerText = element.email;
-
-            let levelHtml = null;
-            switch (element.level) {
-                case config.freelancerLevels.junior:
-                    levelHtml = `<span class="badge badge-info">${element.level}</span>`
-                    break;
-                case config.freelancerLevels.middle:
-                    levelHtml = `<span class="badge badge-warning">${element.level}</span>`
-                    break;
-                case config.freelancerLevels.senior:
-                    levelHtml = `<span class="badge badge-success">${element.level}</span>`
-                    break;
-                default:
-                    levelHtml = `<span class="badge badge-secondary">Unknown</span>`
-                    break;
-            }
-
-            trElement.insertCell().innerHTML = levelHtml;
+            trElement.insertCell().innerHTML = CommonUtils.getLevelHtml(element.level);
             trElement.insertCell().innerText = element.education;
             trElement.insertCell().innerText = element.location;
             trElement.insertCell().innerText = element.skills;

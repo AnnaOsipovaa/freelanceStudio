@@ -5,6 +5,7 @@ import { Logout } from "./components/auth/logout.js";
 import { Signup } from "./components/auth/signup.js";
 import { FileUtils } from "./utils/file-utils.js";
 import { FreelancesView } from "./components/freelancers/freelancers-view.js";
+import { FreelancesCreate } from "./components/freelancers/freelancers-create.js";
 
 export class Router {
     constructor() {
@@ -101,6 +102,15 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 load: () => {
                     new FreelancesView(this.openNewRoute.bind(this));
+                }
+            },
+            {
+                route: '/freelancers/create',
+                title: 'Создание фрилансера',
+                template: '/templates/pages/freelancers/create.html',
+                useLayout: '/templates/layout.html',
+                load: () => {
+                    new FreelancesCreate(this.openNewRoute.bind(this));
                 }
             }
         ]

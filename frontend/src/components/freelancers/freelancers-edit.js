@@ -1,11 +1,19 @@
-import { FileUtils } from "../../utils/file-utils.js";
+import config from "../../config/config.js";
+import { CommonUtils } from "../../utils/common-utils.js";
 import { HttpUtils } from "../../utils/http-utils.js";
 
-export class FreelancesCreate {
+export class FreelancesEdit {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
 
-        document.getElementById('saveButton').addEventListener('click', this.saveFreelancer.bind(this));
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        if (!id) {
+            return this.openNewRoute('/');
+        }
+
+        document.getElementById('updateButton').addEventListener('click', this.updateFreelancer.bind(this));
 
         bsCustomFileInput.init();
 
@@ -16,11 +24,53 @@ export class FreelancesCreate {
         this.locationElement = document.getElementById('location');
         this.skillsElement = document.getElementById('skills');
         this.infoElement = document.getElementById('info');
-        this.levelElement = document.getElementById('level');
+        this.levelSelectElement = document.getElementById('level-select');
         this.avatarElement = document.getElementById('avatar');
+
+        this.getFreelancer(id);
     }
 
-    async saveFreelancer(e) {
+    async getFreelancer(id) {
+        const result = await HttpUtils.request('/freelancers/' + id);
+
+        if (result.redirect) {
+            return this.openNewRoute(result.redirect);
+        }
+
+        if (result.error || !result.response || (result.response && result.response.error)) {
+            return alert('Возникла ошибка при запросе фрилансера. Обратитесь в поддержку');
+        }
+
+        this.showFreelancer(result.response);
+    }
+
+    showFreelancer(freelancer) {
+        let breadcrumbFreelancer = document.getElementById('breadcrumb-freelancer');
+        breadcrumbFreelancer.innerText = freelancer.name + ' ' + freelancer.lastName;
+        breadcrumbFreelancer.href = '/freelancers/view?id=' + freelancer.id;
+
+        if (freelancer.avatar) {
+            this.avatarElement.src = config.host + freelancer.avatar;
+        }
+        document.getElementById('level').innerHTML = CommonUtils.getLevelHtml(freelancer.level);
+
+        this.nameElement.value = freelancer.name;
+        this.lastNameElement.value = freelancer.lastName;
+        this.emailElement.value = freelancer.email;
+        this.educationElement.value = freelancer.education;
+        this.locationElement.value = freelancer.location;
+        this.skillsElement.value = freelancer.skills;
+        this.infoElement.value = freelancer.info;
+
+        for (let i = 0; i < this.levelSelectElement.options.length; i++) {
+            if (this.levelSelectElement.options[i].value === freelancer.level) {
+                this.levelSelectElement.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+    async updateFreelancer(e) {
         e.preventDefault();
 
         if (this.validateForm()) {
@@ -63,7 +113,7 @@ export class FreelancesCreate {
             this.locationElement,
             this.skillsElement,
             this.infoElement,
-            this.levelElement
+            this.levelSelectElement
         ];
 
         textInputArray.forEach(input => {

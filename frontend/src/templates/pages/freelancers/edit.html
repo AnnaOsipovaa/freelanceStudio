@@ -1,4 +1,4 @@
-<div class="freelancer">
+<div class="freelancer-edit">
     <section class="content-header">
         <div class="container-fluid">
         <div class="row mb-2">
@@ -9,7 +9,7 @@
             <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a href="/">Главная</a></li>
                 <li class="breadcrumb-item"><a href="/freelancers">Фрилансеры</a></li>
-                <li class="breadcrumb-item"><a href="/freelancers">вввв</a></li>
+                <li class="breadcrumb-item"><a href="" id="breadcrumb-freelancer"></a></li>
                 <li class="breadcrumb-item active">Редактирование</li>
             </ol>
             </div>
@@ -26,14 +26,10 @@
                           <div class="text-center">
                             <img class="profile-user-img img-fluid img-circle" id="avatar" src="" alt="фото">
                           </div>
-                          <h3 class="profile-username text-center" id="name"></h3>
                           <p class="text-muted text-center">Фрилансер</p>
                           <p class="text-muted text-center level" id="level"></p>
                         </div>
                     </div>
-
-                    <a href="" class="btn btn-warning w-100" id="edit-link">Редактировать</a>
-                    <a href="" class="btn btn-danger w-100 mt-2" id="delete-link">Удалить</a>
                 </div>
                 <div class="col-md-9">
                     <div class="card card-primary">
@@ -41,8 +37,101 @@
                           <h3 class="card-title">Редактирование фрилансера</h3>
                         </div>
                         <div class="card-body">
-                          
-                      </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="name" class="col-form-label">Имя</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="name" placeholder="Имя">
+                                    <span id="name-error" class="error invalid-feedback">Заполните поле</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="last-name" class="col-form-label">Фамилия</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="last-name" placeholder="Фамилия">
+                                    <span id="last-name-error" class="error invalid-feedback">Заполните поле</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="email" class="col-form-label">E-mail</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="email" class="form-control" id="email" placeholder="E-mail">
+                                    <span id="email-error" class="error invalid-feedback">Введите корректный email</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="education" class="col-form-label">Образование</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="education" placeholder="Образование">
+                                    <span id="education-error" class="error invalid-feedback">Заполните поле</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="location" class="col-form-label">Местонахождение</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="location" placeholder="Местонахождение">
+                                    <span id="location-error" class="error invalid-feedback">Заполните поле</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="skills" class="col-form-label">Навыки</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="skills" placeholder="Навыки">
+                                    <span id="skills-error" class="error invalid-feedback">Заполните поле</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="info" class="col-form-label">Информация</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" id="info" placeholder="Информация"></textarea>
+                                    <span id="info-error" class="error invalid-feedback">Заполните поле</span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="level-select" class="col-form-label">Уровень</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <select type="text" class="form-control" id="level-select">
+                                        <option value="junior" selected>Junior</option>
+                                        <option value="middle">Middle</option>
+                                        <option value="senior">Senior</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="avatar" class="col-form-label">Новый аватар</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="avatar">
+                                        <label class="custom-file-label" for="customFile">Выберите файл</label>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <div class="form-group row">
+                                <div class="offset-sm-3 col-sm-9">
+                                    <button type="button" class="btn btn-danger" id="updateButton">Сохранить</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>   
+                    </div>
                 </div>
             </div>
         </div>

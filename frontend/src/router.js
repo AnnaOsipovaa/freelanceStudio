@@ -6,7 +6,7 @@ import { Signup } from "./components/auth/signup.js";
 import { FileUtils } from "./utils/file-utils.js";
 import { FreelancesView } from "./components/freelancers/freelancers-view.js";
 import { FreelancesCreate } from "./components/freelancers/freelancers-create.js";
-import { FreelancesEdit } from "./components/freelancers/freelancers-udit.js";
+import { FreelancesEdit } from "./components/freelancers/freelancers-edit.js";
 
 export class Router {
     constructor() {

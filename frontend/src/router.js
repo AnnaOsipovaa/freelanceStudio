@@ -6,6 +6,7 @@ import { Signup } from "./components/auth/signup.js";
 import { FileUtils } from "./utils/file-utils.js";
 import { FreelancesView } from "./components/freelancers/freelancers-view.js";
 import { FreelancesCreate } from "./components/freelancers/freelancers-create.js";
+import { FreelancesEdit } from "./components/freelancers/freelancers-udit.js";
 
 export class Router {
     constructor() {
@@ -111,7 +112,22 @@ export class Router {
                 useLayout: '/templates/layout.html',
                 load: () => {
                     new FreelancesCreate(this.openNewRoute.bind(this));
-                }
+                },
+                scripts: [
+                    'bs-custom-file-input.min.js'
+                ]
+            },
+            {
+                route: '/freelancers/edit',
+                title: 'Редактирование фрилансера',
+                template: '/templates/pages/freelancers/edit.html',
+                useLayout: '/templates/layout.html',
+                load: () => {
+                    new FreelancesEdit(this.openNewRoute.bind(this));
+                },
+                scripts: [
+                    'bs-custom-file-input.min.js'
+                ]
             }
         ]
     }

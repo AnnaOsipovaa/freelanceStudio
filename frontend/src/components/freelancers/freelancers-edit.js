@@ -1,5 +1,6 @@
 import config from "../../config/config.js";
 import { CommonUtils } from "../../utils/common-utils.js";
+import { FileUtils } from "../../utils/file-utils.js";
 import { HttpUtils } from "../../utils/http-utils.js";
 
 export class FreelancesEdit {
@@ -41,6 +42,7 @@ export class FreelancesEdit {
             return alert('Возникла ошибка при запросе фрилансера. Обратитесь в поддержку');
         }
 
+        this.freelancerOriginalData = result.response;
         this.showFreelancer(result.response);
     }
 
@@ -74,32 +76,49 @@ export class FreelancesEdit {
         e.preventDefault();
 
         if (this.validateForm()) {
-            const params =  {
-                name: this.nameElement.value,
-                lastName: this.lastNameElement.value,
-                email: this.emailElement.value,
-                education: this.educationElement.value,
-                location: this.locationElement.value,
-                skills: this.skillsElement.value,
-                info: this.infoElement.value,
-                level: this.levelElement.value
-            }
 
+            const changedData = {};
+            if(this.nameElement.value !== this.freelancerOriginalData.name){
+                changedData.name = this.nameElement.value;
+            }
+            if(this.lastNameElement.value !== this.freelancerOriginalData.lastName){
+                changedData.lastName = this.lastNameElement.value;
+            }
+            if(this.emailElement.value !== this.freelancerOriginalData.email){
+                changedData.email = this.emailElement.value;
+            }
+            if(this.educationElement.value !== this.freelancerOriginalData.education){
+                changedData.education = this.educationElement.value;
+            }
+            if(this.locationElement.value !== this.freelancerOriginalData.location){
+                changedData.location = this.locationElement.value;
+            }
+            if(this.skillsElement.value !== this.freelancerOriginalData.skills){
+                changedData.skills = this.skillsElement.value;
+            }
+            if(this.infoElement.value !== this.freelancerOriginalData.info){
+                changedData.info = this.infoElement.value;
+            }
+            if(this.levelSelectElement.value !== this.freelancerOriginalData.level){
+                changedData.level = this.levelSelectElement.value;
+            }
             if(this.avatarElement.files && this.avatarElement.files.length > 0){
-                params.avatarBase64 = await FileUtils.convertFileToBase64(this.avatarElement.files[0]);
+                changedData.avatarBase64 = await FileUtils.convertFileToBase64(this.avatarElement.files[0]);
             }
 
-            const result = await HttpUtils.request('/freelancers', true, 'POST', params);
+            if(Object.keys(changedData).length > 0){
+                const result = await HttpUtils.request('/freelancers/' + this.freelancerOriginalData.id, true, 'PUT', changedData);
 
-            if (result.redirect) {
-                return this.openNewRoute(result.redirect);
+                if (result.redirect) {
+                    return this.openNewRoute(result.redirect);
+                }
+    
+                if (result.error || !result.response || (result.response && result.response.error)) {
+                    return alert('Возникла ошибка при обновление фрилансера. Обратитесь в поддержку');
+                }
+    
+                return this.openNewRoute('/freelancers/view?id=' + this.freelancerOriginalData.id);
             }
-
-            if (result.error || !result.response || (result.response && result.response.error)) {
-                return alert('Возникла ошибка при создании фрилансера. Обратитесь в поддержку');
-            }
-
-            return this.openNewRoute('/freelancers/view?id=' + result.response.id);
         }
     }
 

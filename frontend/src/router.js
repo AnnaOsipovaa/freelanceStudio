@@ -7,6 +7,7 @@ import { FileUtils } from "./utils/file-utils.js";
 import { FreelancesView } from "./components/freelancers/freelancers-view.js";
 import { FreelancesCreate } from "./components/freelancers/freelancers-create.js";
 import { FreelancesEdit } from "./components/freelancers/freelancers-edit.js";
+import { FreelancesDelete } from "./components/freelancers/freelancers-delete.js";
 
 export class Router {
     constructor() {
@@ -128,6 +129,12 @@ export class Router {
                 scripts: [
                     'bs-custom-file-input.min.js'
                 ]
+            },
+            {
+                route: '/freelancers/delete',
+                load: () => {
+                    new FreelancesDelete(this.openNewRoute.bind(this));
+                }
             }
         ]
     }

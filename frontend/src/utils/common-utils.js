@@ -1,7 +1,7 @@
 import config from "../config/config.js";
 
-export class CommonUtils{
-    static getLevelHtml(level){
+export class CommonUtils {
+    static getLevelHtml(level) {
         let levelHtml = null;
 
         switch (level) {
@@ -20,5 +20,38 @@ export class CommonUtils{
         }
 
         return levelHtml;
+    }
+
+    static getStatusOrderHtml(status) {
+        const info = {
+            name: 'Неизвестно',
+            color: 'secondary',
+            icon: 'times'
+        };
+
+        switch (status) {
+            case config.ordersLevels.new:
+                info.name = 'Новый';
+                info.color = 'secondary';
+                info.icon = 'star';
+                break;
+            case config.ordersLevels.confirmed:
+                info.name = 'Подтвержден';
+                info.color = 'info';
+                info.icon = 'eye';
+                break;
+            case config.ordersLevels.success:
+                info.name = 'Выполнен';
+                info.color = 'success';
+                info.icon = 'check';
+                break;
+            case config.ordersLevels.canceled:
+                info.name = 'Отменен';
+                info.color = 'danger';
+                info.icon = 'times';
+                break;
+        }
+
+        return info;
     }
 }

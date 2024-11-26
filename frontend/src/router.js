@@ -10,6 +10,7 @@ import { FreelancesEdit } from "./components/freelancers/freelancers-edit.js";
 import { FreelancesDelete } from "./components/freelancers/freelancers-delete.js";
 import { OrdersList } from "./components/orders/orders-list.js";
 import { OrdersView } from "./components/orders/orders-view.js";
+import { OrdersCreate } from "./components/orders/orders-create.js";
 
 export class Router {
     constructor() {
@@ -163,6 +164,17 @@ export class Router {
                 load: () => {
                     new OrdersView(this.openNewRoute.bind(this));
                 }
+            },
+            {
+                route: '/orders/create',
+                title: 'Создание заказа',
+                template: '/templates/pages/orders/create.html',
+                useLayout: '/templates/layout.html',
+                load: () => {
+                    new OrdersCreate(this.openNewRoute.bind(this));
+                },
+                scripts: [
+                ]
             }
         ]
     }

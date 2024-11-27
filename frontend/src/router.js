@@ -174,12 +174,15 @@ export class Router {
                     new OrdersCreate(this.openNewRoute.bind(this));
                 },
                 styles:[
-                    'tempusdominus-bootstrap-4.min.css'
+                    'tempusdominus-bootstrap-4.min.css',
+                    'select2.min.css',
+                    'select2-bootstrap4.min.css'
                 ],
                 scripts: [
                     'moment.min.js',
                     'tempusdominus-bootstrap-4.min.js',
-                    'moment-ru-locale.js'
+                    'moment-ru-locale.js',
+                    'select2.full.min.js'
                 ]
             }
         ]

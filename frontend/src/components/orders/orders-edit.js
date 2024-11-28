@@ -23,19 +23,19 @@ export class OrdersEdit {
         this.scheduledCardElement = document.getElementById('scheduledCard');
         this.deadlineCardElement = document.getElementById('deadlineCard');
 
-        this.calendarScheduledDate = false;
-        this.calendarCompleteDate = false;
-        this.calendarDeadlineDate = false;
+        this.calendarScheduledDate = null;
+        this.calendarCompleteDate = null;
+        this.calendarDeadlineDate = null;
 
         this.init(id);
     }
 
-    async init(id){
+    async init(id) {
         const order = await this.getOrder(id);
-        if(order){
+        if (order) {
             this.showOrder(order);
             const freelancers = await this.getFreelancers();
-            if(freelancers){
+            if (freelancers) {
                 this.fillFreelancersSelect(freelancers, order.freelancer.id);
             }
             this.initCalendar(order);
@@ -73,7 +73,15 @@ export class OrdersEdit {
             date: order.completeDate
         });
         calendarCompleteElement.on('change.datetimepicker', (e) => {
-            this.calendarCompleteDate = e.date;
+            if (e.date) {
+                this.calendarCompleteDate = e.date;
+            } else {
+                if (this.orderOriginalData.completeDate) {
+                    this.calendarCompleteDate = false;
+                }else{
+                    this.calendarCompleteDate = null;
+                }
+            }
         });
 
         calendarDeadlineElement.datetimepicker({
@@ -153,30 +161,42 @@ export class OrdersEdit {
         e.preventDefault();
 
         if (this.validateForm()) {
-            const params = {
-                description: this.descriptionElement.value,
-                deadlineDate: this.calendarDeadlineDate.toISOString(),
-                scheduledDate: this.calendarScheduledDate.toISOString(),
-                freelancer: this.freelancerSelectElement.value,
-                status: this.statusSelectElement.value,
-                amount: parseInt(this.amountElement.value)
+            const changedData = {};
+            if (parseInt(this.amountElement.value) !== parseInt(this.orderOriginalData.amount)) {
+                changedData.amount = parseInt(this.amountElement.value);
+            }
+            if (this.descriptionElement.value !== this.orderOriginalData.description) {
+                changedData.description = this.descriptionElement.value;
+            }
+            if (this.statusSelectElement.value !== this.orderOriginalData.status) {
+                changedData.status = this.statusSelectElement.value;
+            }
+            if (this.freelancerSelectElement.value !== this.orderOriginalData.freelancer.id) {
+                changedData.freelancer = this.freelancerSelectElement.value;
+            }
+            if (this.calendarCompleteDate || this.calendarCompleteDate === false) {
+                changedData.completeDate = this.calendarCompleteDate ? this.calendarCompleteDate.toISOString() : null;
+            }
+            if (this.calendarDeadlineDate) {
+                changedData.deadlineDate = this.calendarDeadlineDate.toISOString();
+            }
+            if (this.calendarScheduledDate) {
+                changedData.scheduledDate = this.calendarScheduledDate.toISOString();
             }
 
-            if (this.calendarCompleteDate) {
-                params.completeDate = this.calendarCompleteDate.toISOString();
+            if (Object.keys(changedData).length > 0) {
+                const result = await HttpUtils.request('/orders/' + this.orderOriginalData.id, true, 'PUT', changedData);
+
+                if (result.redirect) {
+                    return this.openNewRoute(result.redirect);
+                }
+
+                if (result.error || !result.response || (result.response && result.response.error)) {
+                    return alert('Возникла ошибка при обновлении заказа. Обратитесь в поддержку');
+                }
+
+                return this.openNewRoute('/orders/view?id=' + this.orderOriginalData.id);
             }
-
-            const result = await HttpUtils.request('/orders', true, 'POST', params);
-
-            if (result.redirect) {
-                return this.openNewRoute(result.redirect);
-            }
-
-            if (result.error || !result.response || (result.response && result.response.error)) {
-                return alert('Возникла ошибка при создании заказа. Обратитесь в поддержку');
-            }
-
-            return this.openNewRoute('/orders/view?id=' + result.response.id);
         }
     }
 
@@ -196,21 +216,6 @@ export class OrdersEdit {
                 isValid = false;
             }
         });
-
-
-        if (this.calendarScheduledDate) {
-            this.scheduledCardElement.classList.remove('is-invalid');
-        } else {
-            this.scheduledCardElement.classList.add('is-invalid');
-            isValid = false;
-        }
-
-        if (this.calendarCompleteDate) {
-            this.deadlineCardElement.classList.remove('is-invalid');
-        } else {
-            this.deadlineCardElement.classList.add('is-invalid');
-            isValid = false;
-        }
 
         return isValid;
     }

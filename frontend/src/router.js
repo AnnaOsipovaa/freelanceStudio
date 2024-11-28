@@ -12,6 +12,7 @@ import { OrdersList } from "./components/orders/orders-list.js";
 import { OrdersView } from "./components/orders/orders-view.js";
 import { OrdersCreate } from "./components/orders/orders-create.js";
 import { OrdersEdit } from "./components/orders/orders-edit.js";
+import { OrdersDelete } from "./components/orders/orders-delete.js";
 
 export class Router {
     constructor() {
@@ -174,7 +175,7 @@ export class Router {
                 load: () => {
                     new OrdersCreate(this.openNewRoute.bind(this));
                 },
-                styles:[
+                styles: [
                     'tempusdominus-bootstrap-4.min.css',
                     'select2.min.css',
                     'select2-bootstrap4.min.css'
@@ -194,7 +195,7 @@ export class Router {
                 load: () => {
                     new OrdersEdit(this.openNewRoute.bind(this));
                 },
-                styles:[
+                styles: [
                     'tempusdominus-bootstrap-4.min.css',
                     'select2.min.css',
                     'select2-bootstrap4.min.css'
@@ -209,7 +210,7 @@ export class Router {
             {
                 route: '/orders/delete',
                 load: () => {
-                   // new OrdersDelete(this.openNewRoute.bind(this));
+                    new OrdersDelete(this.openNewRoute.bind(this));
                 }
             }
         ]

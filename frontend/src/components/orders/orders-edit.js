@@ -1,12 +1,21 @@
 import { HttpUtils } from "../../utils/http-utils.js";
 
-export class OrdersCreate {
+export class OrdersEdit {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        if (!id) {
+            return this.openNewRoute('/');
+        }
+
         this.freelancersSelect = document.getElementById('freelancerSelect');
 
-        document.getElementById('saveButton').addEventListener('click', this.saveOrder.bind(this));
+        document.getElementById('updateButton').addEventListener('click', this.updateOrder.bind(this));
 
+        this.orderNumberElement = document.getElementById('orderNumber');
         this.amountElement = document.getElementById('amount');
         this.descriptionElement = document.getElementById('description');
         this.statusSelectElement = document.getElementById('statusSelect');
@@ -18,11 +27,22 @@ export class OrdersCreate {
         this.calendarCompleteDate = false;
         this.calendarDeadlineDate = false;
 
-        this.initCalendar();
-        this.getFreelancers();
+        this.init(id);
     }
 
-    initCalendar() {
+    async init(id){
+        const order = await this.getOrder(id);
+        if(order){
+            this.showOrder(order);
+            const freelancers = await this.getFreelancers();
+            if(freelancers){
+                this.fillFreelancersSelect(freelancers, order.freelancer.id);
+            }
+            this.initCalendar(order);
+        }
+    }
+
+    initCalendar(order) {
         const calendarScheduledElement = $('#calendarScheduled');
         const calendarCompleteElement = $('#calendarComplete');
         const calendarDeadlineElement = $('#calendarDeadline');
@@ -33,7 +53,8 @@ export class OrdersCreate {
                 time: 'far fa-clock'
             },
             locale: 'ru',
-            useCurrent: false
+            useCurrent: false,
+            date: order.scheduledDate
         });
         calendarScheduledElement.on('change.datetimepicker', (e) => {
             this.calendarScheduledDate = e.date;
@@ -48,7 +69,8 @@ export class OrdersCreate {
             useCurrent: false,
             buttons: {
                 showClear: true
-            }
+            },
+            date: order.completeDate
         });
         calendarCompleteElement.on('change.datetimepicker', (e) => {
             this.calendarCompleteDate = e.date;
@@ -60,11 +82,41 @@ export class OrdersCreate {
                 time: 'far fa-clock'
             },
             locale: 'ru',
-            useCurrent: false
+            useCurrent: false,
+            date: order.deadlineDate
         });
         calendarDeadlineElement.on('change.datetimepicker', (e) => {
             this.calendarDeadlineDate = e.date;
         });
+    }
+
+    async getOrder(id) {
+        const result = await HttpUtils.request('/orders/' + id);
+
+        if (result.redirect) {
+            return this.openNewRoute(result.redirect);
+        }
+
+        if (result.error || !result.response || (result.response && result.response.error)) {
+            return alert('Возникла ошибка при запросе заказа. Обратитесь в поддержку');
+        }
+
+        this.orderOriginalData = result.response;
+        return result.response;
+    }
+
+    showOrder(order) {
+        this.orderNumberElement.innerText = order.number;
+        this.orderNumberElement.href = `/orders/view?id=${order.id}`;
+        this.amountElement.value = order.amount;
+        this.descriptionElement.value = order.description;
+
+        for (let i = 0; i < this.statusSelectElement.options.length; i++) {
+            if (this.statusSelectElement.options[i].value === order.status) {
+                this.statusSelectElement.selectedIndex = i;
+                break;
+            }
+        }
     }
 
     async getFreelancers() {
@@ -78,14 +130,17 @@ export class OrdersCreate {
             return alert('Возникла ошибка при запросе фрилансеров. Обратитесь в поддержку');
         }
 
-        this.fillFreelancersSelect(result.response.freelancers);
+        return result.response.freelancers;
     }
 
-    fillFreelancersSelect(freelancers) {
+    fillFreelancersSelect(freelancers, id) {
         freelancers.forEach(element => {
             const optionElement = document.createElement('option');
             optionElement.value = element.id;
             optionElement.innerText = element.name + ' ' + element.lastName;
+            if (element.id === id) {
+                optionElement.selected = true;
+            }
             this.freelancersSelect.appendChild(optionElement);
         });
 
@@ -94,7 +149,7 @@ export class OrdersCreate {
         })
     }
 
-    async saveOrder(e) {
+    async updateOrder(e) {
         e.preventDefault();
 
         if (this.validateForm()) {

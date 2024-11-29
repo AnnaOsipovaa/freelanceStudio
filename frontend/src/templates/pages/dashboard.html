@@ -1,3 +1,60 @@
-<div>
-    <a href="/404">404</a>
+<div class="dashboard">
+    <section class="content-header">
+        <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Дашборд</h1>
+            </div>
+        </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-3 col-6">
+              <div class="small-box bg-info">
+                <div class="inner">
+                  <h3 id="ordersAllNumber"></h3>
+                  <p>Всего заказов</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-3 col-6">
+              <div class="small-box bg-success">
+                <div class="inner">
+                  <h3 id="ordersCompletedNumber"></h3>
+                  <p>Завершено</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-3 col-6">
+              <div class="small-box bg-warning">
+                <div class="inner">
+                  <h3 id="ordersProgressNumber"></h3>
+                  <p>В процессе</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+              <div class="small-box bg-danger">
+                <div class="inner">
+                  <h3 id="ordersCancelledNumber"></h3>
+                  <p>Отменено</p>
+                </div>
+              </div>
+            </div>
+            </div>
+          <h3 class="mb-2">Календарь заказов</h3>
+          <div class="card card-primary">
+            <div class="card-body p-0">
+              <div id="calendar"></div>
+            </div>
+          </div>
+
+          </div>
+        </div>
+    </section>
 </div>

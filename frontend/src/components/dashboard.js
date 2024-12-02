@@ -40,11 +40,6 @@ export class Dashboard {
     loadCalendarInfo(orders) {
         const calendarEl = document.getElementById('calendar');
 
-        const date = new Date()
-        const d = date.getDate()
-        const m = date.getMonth()
-        const y = date.getFullYear()
-
         const events = [];
 
         orders.forEach(order => {

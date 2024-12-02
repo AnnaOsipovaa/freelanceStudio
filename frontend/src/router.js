@@ -315,6 +315,8 @@ export class Router {
 
                 document.body.classList.add('sidebar-mini');
                 document.body.classList.add('sidebar-fixed');
+
+                this.activateMenuItem(newRoute);
             } else {
                 document.body.classList.remove('sidebar-mini');
                 document.body.classList.remove('sidebar-fixed');
@@ -326,5 +328,16 @@ export class Router {
         if (newRoute.load && typeof newRoute.load === 'function') {
             newRoute.load();
         }
+    }
+
+    activateMenuItem(route) {
+        document.querySelectorAll('.sidebar .nav-link').forEach(item => {
+            const href = item.getAttribute('href');
+            if ((route.route.includes(href) && href !== '/') || (route.route === '/' && href === '/')) {
+                item.classList.add('active');
+            }else{
+                item.classList.remove('active');
+            }
+        });
     }
 }

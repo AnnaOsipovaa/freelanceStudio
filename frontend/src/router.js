@@ -13,10 +13,13 @@ import { OrdersView } from "./components/orders/orders-view.js";
 import { OrdersCreate } from "./components/orders/orders-create.js";
 import { OrdersEdit } from "./components/orders/orders-edit.js";
 import { OrdersDelete } from "./components/orders/orders-delete.js";
+import { AuthUtils } from "./utils/auth-utils.js";
 
 export class Router {
     constructor() {
         this.initEvents();
+
+        this.userName = null;
 
         this.titleElement = document.getElementById('page-title');
         this.stylesElement = document.getElementById('style');
@@ -316,6 +319,18 @@ export class Router {
                 document.body.classList.add('sidebar-mini');
                 document.body.classList.add('sidebar-fixed');
 
+                this.profileNameElement = document.getElementById('profileName')
+                if(!this.userName){
+                    let userInfo = AuthUtils.getAuthInfo(AuthUtils.userInfoTokenKey);
+                    if(userInfo){
+                        userInfo = JSON.parse(userInfo);
+                        if(userInfo.name){
+                            this.userName = userInfo.name;
+                        }
+                    }
+                }
+                this.profileNameElement.innerText = this.userName;
+               
                 this.activateMenuItem(newRoute);
             } else {
                 document.body.classList.remove('sidebar-mini');

@@ -2,6 +2,7 @@ import config from "../../config/config.js";
 import { CommonUtils } from "../../utils/common-utils.js";
 import { FileUtils } from "../../utils/file-utils.js";
 import { HttpUtils } from "../../utils/http-utils.js";
+import { ValidationUtils } from "../../utils/validation-utils.js";
 
 export class FreelancesEdit {
     constructor(openNewRoute) {
@@ -29,6 +30,17 @@ export class FreelancesEdit {
         this.avatarElement = document.getElementById('avatar');
 
         this.getFreelancer(id);
+
+        this.validations = [
+            { element: this.nameElement },
+            { element: this.lastNameElement },
+            { element: this.educationElement },
+            { element: this.locationElement },
+            { element: this.skillsElement },
+            { element: this.infoElement },
+            { element: this.levelSelectElement },
+            { element: this.emailElement, options: { pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/ } }
+        ];
     }
 
     async getFreelancer(id) {
@@ -75,82 +87,50 @@ export class FreelancesEdit {
     async updateFreelancer(e) {
         e.preventDefault();
 
-        if (this.validateForm()) {
+        if (ValidationUtils.validateForm(this.validations)) {
 
             const changedData = {};
-            if(this.nameElement.value !== this.freelancerOriginalData.name){
+            if (this.nameElement.value !== this.freelancerOriginalData.name) {
                 changedData.name = this.nameElement.value;
             }
-            if(this.lastNameElement.value !== this.freelancerOriginalData.lastName){
+            if (this.lastNameElement.value !== this.freelancerOriginalData.lastName) {
                 changedData.lastName = this.lastNameElement.value;
             }
-            if(this.emailElement.value !== this.freelancerOriginalData.email){
+            if (this.emailElement.value !== this.freelancerOriginalData.email) {
                 changedData.email = this.emailElement.value;
             }
-            if(this.educationElement.value !== this.freelancerOriginalData.education){
+            if (this.educationElement.value !== this.freelancerOriginalData.education) {
                 changedData.education = this.educationElement.value;
             }
-            if(this.locationElement.value !== this.freelancerOriginalData.location){
+            if (this.locationElement.value !== this.freelancerOriginalData.location) {
                 changedData.location = this.locationElement.value;
             }
-            if(this.skillsElement.value !== this.freelancerOriginalData.skills){
+            if (this.skillsElement.value !== this.freelancerOriginalData.skills) {
                 changedData.skills = this.skillsElement.value;
             }
-            if(this.infoElement.value !== this.freelancerOriginalData.info){
+            if (this.infoElement.value !== this.freelancerOriginalData.info) {
                 changedData.info = this.infoElement.value;
             }
-            if(this.levelSelectElement.value !== this.freelancerOriginalData.level){
+            if (this.levelSelectElement.value !== this.freelancerOriginalData.level) {
                 changedData.level = this.levelSelectElement.value;
             }
-            if(this.avatarElement.files && this.avatarElement.files.length > 0){
+            if (this.avatarElement.files && this.avatarElement.files.length > 0) {
                 changedData.avatarBase64 = await FileUtils.convertFileToBase64(this.avatarElement.files[0]);
             }
 
-            if(Object.keys(changedData).length > 0){
+            if (Object.keys(changedData).length > 0) {
                 const result = await HttpUtils.request('/freelancers/' + this.freelancerOriginalData.id, true, 'PUT', changedData);
 
                 if (result.redirect) {
                     return this.openNewRoute(result.redirect);
                 }
-    
+
                 if (result.error || !result.response || (result.response && result.response.error)) {
                     return alert('Возникла ошибка при обновление фрилансера. Обратитесь в поддержку');
                 }
-    
+
                 return this.openNewRoute('/freelancers/view?id=' + this.freelancerOriginalData.id);
             }
         }
-    }
-
-    validateForm() {
-        let isValid = true;
-
-        let textInputArray = [
-            this.nameElement,
-            this.lastNameElement,
-            this.educationElement,
-            this.locationElement,
-            this.skillsElement,
-            this.infoElement,
-            this.levelSelectElement
-        ];
-
-        textInputArray.forEach(input => {
-            if (input.value) {
-                input.classList.remove('is-invalid');
-            } else {
-                input.classList.add('is-invalid');
-                isValid = false;
-            }
-        });
-
-        if (this.emailElement.value && this.emailElement.value.match(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)) {
-            this.emailElement.classList.remove('is-invalid');
-        } else {
-            this.emailElement.classList.add('is-invalid');
-            isValid = false;
-        }
-
-        return isValid;
     }
 }

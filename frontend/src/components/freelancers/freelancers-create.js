@@ -1,5 +1,6 @@
 import { FileUtils } from "../../utils/file-utils.js";
 import { HttpUtils } from "../../utils/http-utils.js";
+import { ValidationUtils } from "../../utils/validation-utils.js";
 
 export class FreelancesCreate {
     constructor(openNewRoute) {
@@ -67,20 +68,16 @@ export class FreelancesCreate {
         ];
 
         textInputArray.forEach(input => {
-            if (input.value) {
-                input.classList.remove('is-invalid');
-            } else {
-                input.classList.add('is-invalid');
-                isValid = false;
-            }
+            const validationResult = ValidationUtils.validateField(input);
+            if(!validationResult){
+                isValid = validationResult;
+            }   
         });
 
-        if (this.emailElement.value && this.emailElement.value.match(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)) {
-            this.emailElement.classList.remove('is-invalid');
-        } else {
-            this.emailElement.classList.add('is-invalid');
-            isValid = false;
-        }
+        const validationResult = ValidationUtils.validateField(this.emailElement, /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/);
+        if(!validationResult){
+            isValid = validationResult;
+        }   
 
         return isValid;
     }

@@ -10,6 +10,21 @@ export class FreelancesCreate {
 
         bsCustomFileInput.init();
 
+        this.findElements();
+
+        this.validations = [
+            { element: this.nameElement },
+            { element: this.lastNameElement },
+            { element: this.educationElement },
+            { element: this.locationElement },
+            { element: this.skillsElement },
+            { element: this.infoElement },
+            { element: this.levelElement },
+            { element: this.emailElement, options: { pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/ } }
+        ];
+    }
+
+    findElements(){
         this.nameElement = document.getElementById('name');
         this.lastNameElement = document.getElementById('last-name');
         this.emailElement = document.getElementById('email');
@@ -24,7 +39,7 @@ export class FreelancesCreate {
     async saveFreelancer(e) {
         e.preventDefault();
 
-        if (this.validateForm()) {
+        if (ValidationUtils.validateForm(this.validations)) {
             const params =  {
                 name: this.nameElement.value,
                 lastName: this.lastNameElement.value,
@@ -52,33 +67,5 @@ export class FreelancesCreate {
 
             return this.openNewRoute('/freelancers/view?id=' + result.response.id);
         }
-    }
-
-    validateForm() {
-        let isValid = true;
-
-        let textInputArray = [
-            this.nameElement,
-            this.lastNameElement,
-            this.educationElement,
-            this.locationElement,
-            this.skillsElement,
-            this.infoElement,
-            this.levelElement
-        ];
-
-        textInputArray.forEach(input => {
-            const validationResult = ValidationUtils.validateField(input);
-            if(!validationResult){
-                isValid = validationResult;
-            }   
-        });
-
-        const validationResult = ValidationUtils.validateField(this.emailElement, /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/);
-        if(!validationResult){
-            isValid = validationResult;
-        }   
-
-        return isValid;
     }
 }

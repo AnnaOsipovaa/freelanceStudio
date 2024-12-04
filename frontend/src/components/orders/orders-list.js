@@ -38,11 +38,7 @@ export class OrdersList {
 
             trElement.insertCell().innerText = element.completeDate ? (new Date(element.completeDate)).toLocaleString('ru-Ru') : '';
 
-            trElement.insertCell().innerHTML = `<div class="order-tools">
-                <a href="/orders/view?id=${element.id}"><i class="fas fa-eye"></i></a>
-                <a href="/orders/edit?id=${element.id}"><i class="fas fa-edit"></i></a>
-                <a href="/orders/delete?id=${element.id}"><i class="fas fa-trash"></i></a>
-                </div>`;
+            trElement.insertCell().innerHTML = CommonUtils.generateGridToolsColumn('orders', element.id);
             recordsElements.appendChild(trElement);
         });
 

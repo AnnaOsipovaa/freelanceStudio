@@ -1,4 +1,5 @@
 import { HttpUtils } from "../../utils/http-utils.js";
+import { ValidationUtils } from "../../utils/validation-utils.js";
 
 export class OrdersCreate {
     constructor(openNewRoute) {
@@ -7,12 +8,7 @@ export class OrdersCreate {
 
         document.getElementById('saveButton').addEventListener('click', this.saveOrder.bind(this));
 
-        this.amountElement = document.getElementById('amount');
-        this.descriptionElement = document.getElementById('description');
-        this.statusSelectElement = document.getElementById('statusSelect');
-        this.freelancerSelectElement = document.getElementById('freelancerSelect');
-        this.scheduledCardElement = document.getElementById('scheduledCard');
-        this.deadlineCardElement = document.getElementById('deadlineCard');
+        this.findElements();
 
         this.calendarScheduledDate = false;
         this.calendarCompleteDate = false;
@@ -22,48 +18,46 @@ export class OrdersCreate {
         this.getFreelancers();
     }
 
+    findElements(){
+        this.amountElement = document.getElementById('amount');
+        this.descriptionElement = document.getElementById('description');
+        this.statusSelectElement = document.getElementById('statusSelect');
+        this.freelancerSelectElement = document.getElementById('freelancerSelect');
+        this.scheduledCardElement = document.getElementById('scheduledCard');
+        this.deadlineCardElement = document.getElementById('deadlineCard');
+    }
+
     initCalendar() {
         const calendarScheduledElement = $('#calendarScheduled');
         const calendarCompleteElement = $('#calendarComplete');
         const calendarDeadlineElement = $('#calendarDeadline');
 
-        calendarScheduledElement.datetimepicker({
+        const calendarOptions = {
             inline: true,
             icons: {
                 time: 'far fa-clock'
             },
             locale: 'ru',
             useCurrent: false
-        });
+        }
+        
+        calendarScheduledElement.datetimepicker(calendarOptions);
         calendarScheduledElement.on('change.datetimepicker', (e) => {
             this.calendarScheduledDate = e.date;
         });
 
-        calendarCompleteElement.datetimepicker({
-            inline: true,
-            icons: {
-                time: 'far fa-clock'
-            },
-            locale: 'ru',
-            useCurrent: false,
-            buttons: {
-                showClear: true
-            }
-        });
-        calendarCompleteElement.on('change.datetimepicker', (e) => {
-            this.calendarCompleteDate = e.date;
-        });
-
-        calendarDeadlineElement.datetimepicker({
-            inline: true,
-            icons: {
-                time: 'far fa-clock'
-            },
-            locale: 'ru',
-            useCurrent: false
-        });
+        calendarDeadlineElement.datetimepicker(calendarOptions);
         calendarDeadlineElement.on('change.datetimepicker', (e) => {
             this.calendarDeadlineDate = e.date;
+        });
+
+        calendarOptions.buttons = {
+            showClear: true
+        };
+
+        calendarCompleteElement.datetimepicker(calendarOptions);
+        calendarCompleteElement.on('change.datetimepicker', (e) => {
+            this.calendarCompleteDate = e.date;
         });
     }
 
@@ -97,7 +91,14 @@ export class OrdersCreate {
     async saveOrder(e) {
         e.preventDefault();
 
-        if (this.validateForm()) {
+        this.validations = [
+            { element: this.amountElement },
+            { element: this.descriptionElement },
+            { element: this.scheduledCardElement, options: { checkProperty: this.calendarScheduledDate } },
+            { element: this.deadlineCardElement, options: { checkProperty: this.calendarDeadlineDate } }
+        ];
+
+        if (ValidationUtils.validateForm(this.validations)) {
             const params = {
                 description: this.descriptionElement.value,
                 deadlineDate: this.calendarDeadlineDate.toISOString(),
@@ -123,40 +124,5 @@ export class OrdersCreate {
 
             return this.openNewRoute('/orders/view?id=' + result.response.id);
         }
-    }
-
-    validateForm() {
-        let isValid = true;
-
-        let textInputArray = [
-            this.amountElement,
-            this.descriptionElement,
-        ];
-
-        textInputArray.forEach(input => {
-            if (input.value) {
-                input.classList.remove('is-invalid');
-            } else {
-                input.classList.add('is-invalid');
-                isValid = false;
-            }
-        });
-
-
-        if (this.calendarScheduledDate) {
-            this.scheduledCardElement.classList.remove('is-invalid');
-        } else {
-            this.scheduledCardElement.classList.add('is-invalid');
-            isValid = false;
-        }
-
-        if (this.calendarCompleteDate) {
-            this.deadlineCardElement.classList.remove('is-invalid');
-        } else {
-            this.deadlineCardElement.classList.add('is-invalid');
-            isValid = false;
-        }
-
-        return isValid;
     }
 }

@@ -54,4 +54,12 @@ export class CommonUtils {
 
         return info;
     }
+
+    static generateGridToolsColumn(entity, id){
+        return `<div class="${entity}-tools">
+                <a href="/${entity}/view?id=${id}"><i class="fas fa-eye"></i></a>
+                <a href="/${entity}/edit?id=${id}"><i class="fas fa-edit"></i></a>
+                <a href="/${entity}/delete?id=${id}"><i class="fas fa-trash"></i></a>
+                </div>`;
+    }
 }

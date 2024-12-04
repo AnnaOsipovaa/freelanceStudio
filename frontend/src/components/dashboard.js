@@ -82,7 +82,7 @@ export class Dashboard {
             }
         });
 
-        const calendar = new FullCalendar.Calendar(calendarEl, {
+        (new FullCalendar.Calendar(calendarEl, {
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
@@ -92,8 +92,6 @@ export class Dashboard {
             firstDay: 1,
             locale: 'ru',
             events: events
-        });
-
-        calendar.render();
+        })).render();
     }
 }

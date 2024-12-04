@@ -11,21 +11,25 @@ export class ValidationUtils {
         return isValid;
     }
 
-    static validateField(input, options) {
-        let condition = input.value;
+    static validateField(element, options) {
+        let condition = element.value;
         if (options) {
             if (options.hasOwnProperty('pattern')) {
-                condition = input.value && input.value.match(options.pattern);
+                condition = element.value && element.value.match(options.pattern);
             } else if (options.hasOwnProperty('compareTo')) {
-                condition = input.value && input.value === options.compareTo;
+                condition = element.value && element.value === options.compareTo;
+            } else if (options.hasOwnProperty('checkProperty')) {
+                condition = options.checkProperty;
+            } else if(options.hasOwnProperty('checked')){
+                condition = element.checked;
             }
         }
 
         if (condition) {
-            input.classList.remove('is-invalid');
+            element.classList.remove('is-invalid');
             return true;
         } else {
-            input.classList.add('is-invalid');
+            element.classList.add('is-invalid');
             return false;
         }
     }

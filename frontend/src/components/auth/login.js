@@ -1,5 +1,6 @@
 import { AuthUtils } from "../../utils/auth-utils.js";
 import { HttpUtils } from "../../utils/http-utils.js";
+import { ValidationUtils } from "../../utils/validation-utils.js";
 
 export class Login {
     constructor(openNewRoute) {
@@ -9,18 +10,27 @@ export class Login {
             return this.openNewRoute('/');
         }
 
+        this.findElements();
+
+        document.getElementById('process-button').addEventListener('click', this.login.bind(this));
+
+        this.validations = [
+            { element: this.passwordElement },
+            { element: this.emailElement, options: { pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/ } }
+        ];
+    }
+
+    findElements(){
         this.emailElement = document.getElementById('email');
         this.passwordElement = document.getElementById('password');
         this.remember = document.getElementById('remember');
         this.commonErrorElement = document.getElementById('common-error');
-
-        document.getElementById('process-button').addEventListener('click', this.login.bind(this));
     }
 
     async login() {
         this.commonErrorElement.style.display = 'none';
 
-        if (this.validateForm()) {
+        if (ValidationUtils.validateForm(this.validations)) {
 
             const result = await HttpUtils.request('/login', false, 'POST', {
                 email: this.emailElement.value,
@@ -42,28 +52,6 @@ export class Login {
             });
 
             this.openNewRoute('/');
-        } else {
-
         }
-    }
-
-    validateForm() {
-        let isValid = true;
-
-        if (this.emailElement.value && this.emailElement.value.match(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)) {
-            this.emailElement.classList.remove('is-invalid');
-        } else {
-            this.emailElement.classList.add('is-invalid');
-            isValid = false;
-        }
-
-        if (this.passwordElement.value) {
-            this.passwordElement.classList.remove('is-invalid');
-        } else {
-            this.passwordElement.classList.add('is-invalid');
-            isValid = false;
-        }
-
-        return isValid;
     }
 }

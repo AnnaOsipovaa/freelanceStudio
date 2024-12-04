@@ -1,11 +1,12 @@
 import { HttpUtils } from "../../utils/http-utils.js";
+import { ValidationUtils } from "../../utils/validation-utils.js";
+import { UrlUtils } from "../../utils/url-utils.js";
 
 export class OrdersEdit {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
+        const id = UrlUtils.getUrlParam('id');
 
         if (!id) {
             return this.openNewRoute('/');
@@ -15,19 +16,26 @@ export class OrdersEdit {
 
         document.getElementById('updateButton').addEventListener('click', this.updateOrder.bind(this));
 
-        this.orderNumberElement = document.getElementById('orderNumber');
-        this.amountElement = document.getElementById('amount');
-        this.descriptionElement = document.getElementById('description');
-        this.statusSelectElement = document.getElementById('statusSelect');
-        this.freelancerSelectElement = document.getElementById('freelancerSelect');
-        this.scheduledCardElement = document.getElementById('scheduledCard');
-        this.deadlineCardElement = document.getElementById('deadlineCard');
+        this.findElements();
 
         this.calendarScheduledDate = null;
         this.calendarCompleteDate = null;
         this.calendarDeadlineDate = null;
 
         this.init(id);
+
+        this.validations = [
+            { element: this.amountElement },
+            { element: this.descriptionElement }
+        ];
+    }
+
+    findElements() {
+        this.orderNumberElement = document.getElementById('orderNumber');
+        this.amountElement = document.getElementById('amount');
+        this.descriptionElement = document.getElementById('description');
+        this.statusSelectElement = document.getElementById('statusSelect');
+        this.freelancerSelectElement = document.getElementById('freelancerSelect');
     }
 
     async init(id) {
@@ -47,52 +55,42 @@ export class OrdersEdit {
         const calendarCompleteElement = $('#calendarComplete');
         const calendarDeadlineElement = $('#calendarDeadline');
 
-        calendarScheduledElement.datetimepicker({
+        const calendarOptions = {
             inline: true,
             icons: {
                 time: 'far fa-clock'
             },
             locale: 'ru',
-            useCurrent: false,
-            date: order.scheduledDate
-        });
+            useCurrent: false
+        }
+
+        calendarOptions.date = order.scheduledDate;
+
+        calendarScheduledElement.datetimepicker(Object.assign({}, calendarOptions, { date: order.scheduledDate }));
         calendarScheduledElement.on('change.datetimepicker', (e) => {
             this.calendarScheduledDate = e.date;
         });
 
-        calendarCompleteElement.datetimepicker({
-            inline: true,
-            icons: {
-                time: 'far fa-clock'
-            },
-            locale: 'ru',
-            useCurrent: false,
-            buttons: {
-                showClear: true
-            },
-            date: order.completeDate
-        });
+        calendarCompleteElement.datetimepicker(Object.assign({}, calendarOptions,
+            {
+                buttons: {
+                    showClear: true
+                },
+                date: order.completeDate
+            }));
         calendarCompleteElement.on('change.datetimepicker', (e) => {
             if (e.date) {
                 this.calendarCompleteDate = e.date;
             } else {
                 if (this.orderOriginalData.completeDate) {
                     this.calendarCompleteDate = false;
-                }else{
+                } else {
                     this.calendarCompleteDate = null;
                 }
             }
         });
 
-        calendarDeadlineElement.datetimepicker({
-            inline: true,
-            icons: {
-                time: 'far fa-clock'
-            },
-            locale: 'ru',
-            useCurrent: false,
-            date: order.deadlineDate
-        });
+        calendarDeadlineElement.datetimepicker(Object.assign({}, calendarOptions, { date: order.deadlineDate }));
         calendarDeadlineElement.on('change.datetimepicker', (e) => {
             this.calendarDeadlineDate = e.date;
         });
@@ -160,7 +158,7 @@ export class OrdersEdit {
     async updateOrder(e) {
         e.preventDefault();
 
-        if (this.validateForm()) {
+        if (ValidationUtils.validateForm(this.validations)) {
             const changedData = {};
             if (parseInt(this.amountElement.value) !== parseInt(this.orderOriginalData.amount)) {
                 changedData.amount = parseInt(this.amountElement.value);
@@ -198,25 +196,5 @@ export class OrdersEdit {
                 return this.openNewRoute('/orders/view?id=' + this.orderOriginalData.id);
             }
         }
-    }
-
-    validateForm() {
-        let isValid = true;
-
-        let textInputArray = [
-            this.amountElement,
-            this.descriptionElement,
-        ];
-
-        textInputArray.forEach(input => {
-            if (input.value) {
-                input.classList.remove('is-invalid');
-            } else {
-                input.classList.add('is-invalid');
-                isValid = false;
-            }
-        });
-
-        return isValid;
     }
 }

@@ -2,14 +2,14 @@ import config from "../../config/config.js";
 import { CommonUtils } from "../../utils/common-utils.js";
 import { FileUtils } from "../../utils/file-utils.js";
 import { HttpUtils } from "../../utils/http-utils.js";
+import { UrlUtils } from "../../utils/url-utils.js";
 import { ValidationUtils } from "../../utils/validation-utils.js";
 
 export class FreelancesEdit {
     constructor(openNewRoute) {
         this.openNewRoute = openNewRoute;
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
+        const id = UrlUtils.getUrlParam('id');
 
         if (!id) {
             return this.openNewRoute('/');
@@ -19,15 +19,7 @@ export class FreelancesEdit {
 
         bsCustomFileInput.init();
 
-        this.nameElement = document.getElementById('name');
-        this.lastNameElement = document.getElementById('last-name');
-        this.emailElement = document.getElementById('email');
-        this.educationElement = document.getElementById('education');
-        this.locationElement = document.getElementById('location');
-        this.skillsElement = document.getElementById('skills');
-        this.infoElement = document.getElementById('info');
-        this.levelSelectElement = document.getElementById('level-select');
-        this.avatarElement = document.getElementById('avatar');
+        this.findElements();
 
         this.getFreelancer(id);
 
@@ -41,6 +33,18 @@ export class FreelancesEdit {
             { element: this.levelSelectElement },
             { element: this.emailElement, options: { pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/ } }
         ];
+    }
+
+    findElements(){
+        this.nameElement = document.getElementById('name');
+        this.lastNameElement = document.getElementById('last-name');
+        this.emailElement = document.getElementById('email');
+        this.educationElement = document.getElementById('education');
+        this.locationElement = document.getElementById('location');
+        this.skillsElement = document.getElementById('skills');
+        this.infoElement = document.getElementById('info');
+        this.levelSelectElement = document.getElementById('level-select');
+        this.avatarElement = document.getElementById('avatar');
     }
 
     async getFreelancer(id) {

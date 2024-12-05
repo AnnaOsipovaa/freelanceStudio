@@ -1,6 +1,8 @@
 import { HttpUtils } from "../../utils/http-utils.js";
 import { ValidationUtils } from "../../utils/validation-utils.js";
 import { UrlUtils } from "../../utils/url-utils.js";
+import { FreelancersService } from "../../services/freelancers-service.js";
+import { OrdersService } from "../../services/orders-service.js";
 
 export class OrdersEdit {
     constructor(openNewRoute) {
@@ -126,17 +128,14 @@ export class OrdersEdit {
     }
 
     async getFreelancers() {
-        const result = await HttpUtils.request('/freelancers');
+        const response = await FreelancersService.getFreelancers();
 
-        if (result.redirect) {
-            return this.openNewRoute(result.redirect);
+        if (response.error) {
+            alert(response.error);
+            return response.redirect ? this.openNewRoute(response.redirect) : null;
         }
 
-        if (result.error || !result.response || (result.response && (result.response.error || !result.response.freelancers))) {
-            return alert('Возникла ошибка при запросе фрилансеров. Обратитесь в поддержку');
-        }
-
-        return result.response.freelancers;
+        return response.freelancers;
     }
 
     fillFreelancersSelect(freelancers, id) {
@@ -183,17 +182,14 @@ export class OrdersEdit {
             }
 
             if (Object.keys(changedData).length > 0) {
-                const result = await HttpUtils.request('/orders/' + this.orderOriginalData.id, true, 'PUT', changedData);
-
-                if (result.redirect) {
-                    return this.openNewRoute(result.redirect);
+                const response = await OrdersService.updateOrder(this.freelancerOriginalData.id, changedData);
+                
+                if (response.error) {
+                    alert(response.error);
+                    return response.redirect ? this.openNewRoute(response.redirect) : null;
                 }
 
-                if (result.error || !result.response || (result.response && result.response.error)) {
-                    return alert('Возникла ошибка при обновлении заказа. Обратитесь в поддержку');
-                }
-
-                return this.openNewRoute('/orders/view?id=' + this.orderOriginalData.id);
+                return this.openNewRoute('/orders/view?id=' + this.freelancerOriginalData.id);
             }
         }
     }

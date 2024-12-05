@@ -1,3 +1,4 @@
+import { OrdersService } from "../../services/orders-service.js";
 import { HttpUtils } from "../../utils/http-utils.js";
 import { UrlUtils } from "../../utils/url-utils.js";
 
@@ -15,14 +16,11 @@ export class OrdersDelete{
     }
 
     async deleteFreelancer(id) {
-        const result = await HttpUtils.request('/orders/' + id, true, 'DELETE');
+        const response = await OrdersService.deleteOrder(id);
 
-        if (result.redirect) {
-            return this.openNewRoute(result.redirect);
-        }
-
-        if (result.error || !result.response || (result.response && result.response.error)) {
-            return alert('Возникла ошибка при удалении заказа. Обратитесь в поддержку');
+        if (response.error) {
+            alert(response.error);
+            return response.redirect ? this.openNewRoute(response.redirect) : null;
         }
 
         return this.openNewRoute('/orders');

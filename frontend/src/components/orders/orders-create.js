@@ -1,4 +1,5 @@
-import { HttpUtils } from "../../utils/http-utils.js";
+import { FreelancersService } from "../../services/freelancers-service.js";
+import { OrdersService } from "../../services/orders-service.js";
 import { ValidationUtils } from "../../utils/validation-utils.js";
 
 export class OrdersCreate {
@@ -61,18 +62,15 @@ export class OrdersCreate {
         });
     }
 
-    async getFreelancers() {
-        const result = await HttpUtils.request('/freelancers');
+    async getFreelancers() { 
+        const response = await FreelancersService.getFreelancers();
 
-        if (result.redirect) {
-            return this.openNewRoute(result.redirect);
+        if (response.error) {
+            alert(response.error);
+            return response.redirect ? this.openNewRoute(response.redirect) : null;
         }
 
-        if (result.error || !result.response || (result.response && (result.response.error || !result.response.freelancers))) {
-            return alert('Возникла ошибка при запросе фрилансеров. Обратитесь в поддержку');
-        }
-
-        this.fillFreelancersSelect(result.response.freelancers);
+        this.fillFreelancersSelect(response.freelancers);
     }
 
     fillFreelancersSelect(freelancers) {
@@ -112,17 +110,14 @@ export class OrdersCreate {
                 params.completeDate = this.calendarCompleteDate.toISOString();
             }
 
-            const result = await HttpUtils.request('/orders', true, 'POST', params);
+            const response = await OrdersService.createOrder(params);
 
-            if (result.redirect) {
-                return this.openNewRoute(result.redirect);
+            if (response.error) {
+                alert(response.error);
+                return response.redirect ? this.openNewRoute(response.redirect) : null;
             }
 
-            if (result.error || !result.response || (result.response && result.response.error)) {
-                return alert('Возникла ошибка при создании заказа. Обратитесь в поддержку');
-            }
-
-            return this.openNewRoute('/orders/view?id=' + result.response.id);
+            return this.openNewRoute('/orders/view?id=' + response.id);
         }
     }
 }

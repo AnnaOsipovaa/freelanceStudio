@@ -1,4 +1,5 @@
 import config from "../config/config.js";
+import { OrdersService } from "../services/orders-service.js";
 import { HttpUtils } from "../utils/http-utils.js";
 
 export class Dashboard {
@@ -17,17 +18,14 @@ export class Dashboard {
     }
 
     async getOrders() {
-        const result = await HttpUtils.request('/orders');
+        const response = await OrdersService.getOrders();
 
-        if (result.redirect) {
-            return this.openNewRoute(result.redirect);
+        if (response.error) {
+            alert(response.error);
+            return response.redirect ? this.openNewRoute(response.redirect) : null;
         }
 
-        if (result.error || !result.response || (result.response && (result.response.error || !result.response.orders))) {
-            return alert('Возникла ошибка при запросе заказов. Обратитесь в поддержку');
-        }
-
-        return result.response.orders;
+        return response.orders;
     }
 
     loadOrdersInfo(orders) {

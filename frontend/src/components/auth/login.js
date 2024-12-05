@@ -1,3 +1,4 @@
+import { AuthService } from "../../services/auth-service.js";
 import { AuthUtils } from "../../utils/auth-utils.js";
 import { HttpUtils } from "../../utils/http-utils.js";
 import { ValidationUtils } from "../../utils/validation-utils.js";
@@ -32,23 +33,20 @@ export class Login {
 
         if (ValidationUtils.validateForm(this.validations)) {
 
-            const result = await HttpUtils.request('/login', false, 'POST', {
+            const loginResult = await AuthService.logIn({
                 email: this.emailElement.value,
                 password: this.passwordElement.value,
                 rememberMe: this.remember.checked
             });
 
-            if (result.error || 
-                !result.response ||
-                (result.response && !result.response.accessToken || !result.response.refreshToken || !result.response.id || !result.response.name)
-            ) {
+            if (!loginResult) {
                 this.commonErrorElement.style.display = 'block';
                 return;
             }
 
-            AuthUtils.setAuthInfo(result.response.accessToken, result.response.refreshToken, {
-                id: result.response.id,
-                name: result.response.name
+            AuthUtils.setAuthInfo(loginResult.accessToken, loginResult.refreshToken, {
+                id: loginResult.id,
+                name: loginResult.name
             });
 
             this.openNewRoute('/');
